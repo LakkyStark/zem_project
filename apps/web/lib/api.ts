@@ -25,7 +25,13 @@ export async function apiFetch<T>(
     if (token) headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const res = await fetch(`${apiUrl}${path}`, { ...init, headers });
+  let res: Response;
+  try {
+    res = await fetch(`${apiUrl}${path}`, { ...init, headers });
+  } catch (e: any) {
+    // Network error / CORS / DNS, etc.
+    throw new ApiError(0, "API unreachable", `Не удаётся подключиться к API: ${apiUrl}`);
+  }
   const contentType = res.headers.get("content-type") ?? "";
   const isJson = contentType.includes("application/json");
   const data = isJson ? await res.json() : await res.text().catch(() => "");

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 
 export default function LoginPage() {
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export default function LoginPage() {
     } catch (err: any) {
       const detail = err?.detail ? String(err.detail) : null;
       const status = err?.status ? ` (${err.status})` : "";
-      setError(detail ?? `Не удалось войти${status}`);
+      setError(detail ?? `Не удалось войти${status}. API: ${apiUrl}`);
     } finally {
       setBusy(false);
     }

@@ -19,6 +19,7 @@ type RegisterRequest = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [orgName, setOrgName] = useState("Моя организация");
@@ -49,7 +50,7 @@ export default function RegisterPage() {
     } catch (err: any) {
       const detail = err?.detail ? String(err.detail) : null;
       const status = err?.status ? ` (${err.status})` : "";
-      setError(detail ?? `Не удалось зарегистрироваться${status}`);
+      setError(detail ?? `Не удалось зарегистрироваться${status}. API: ${apiUrl}`);
     } finally {
       setBusy(false);
     }
