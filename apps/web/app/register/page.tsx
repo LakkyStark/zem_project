@@ -47,7 +47,9 @@ export default function RegisterPage() {
       setToken(t.access_token);
       router.push("/organizations");
     } catch (err: any) {
-      setError(err?.detail ?? "Не удалось зарегистрироваться");
+      const detail = err?.detail ? String(err.detail) : null;
+      const status = err?.status ? ` (${err.status})` : "";
+      setError(detail ?? `Не удалось зарегистрироваться${status}`);
     } finally {
       setBusy(false);
     }

@@ -26,7 +26,9 @@ export default function LoginPage() {
       setToken(t.access_token);
       router.push("/organizations");
     } catch (err: any) {
-      setError(err?.detail ?? "Не удалось войти");
+      const detail = err?.detail ? String(err.detail) : null;
+      const status = err?.status ? ` (${err.status})` : "";
+      setError(detail ?? `Не удалось войти${status}`);
     } finally {
       setBusy(false);
     }

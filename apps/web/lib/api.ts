@@ -28,10 +28,12 @@ export async function apiFetch<T>(
   const res = await fetch(`${apiUrl}${path}`, { ...init, headers });
   const contentType = res.headers.get("content-type") ?? "";
   const isJson = contentType.includes("application/json");
-  const data = isJson ? await res.json() : null;
+  const data = isJson ? await res.json() : await res.text().catch(() => "");
 
   if (!res.ok) {
-    throw new ApiError(res.status, "API request failed", data?.detail);
+    const detail =
+      typeof data === "string" ? data : (data as any)?.detail;
+    throw new ApiError(res.status, "API request failed", detail);
   }
   return data as T;
 }

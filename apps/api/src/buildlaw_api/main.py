@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from fastapi import HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from buildlaw_api.api.v1.router import api_router
 from buildlaw_api.core.config import get_settings
+from buildlaw_api.db.session import engine
 
 settings = get_settings()
 
@@ -26,7 +29,16 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    try:
+        with engine.connect() as c:
+            c.execute(text("SELECT 1"))
+        return {"status": "ok"}
+    except Exception:
+        # Если БД недоступна — это не "ok" для регистрации/логина.
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="database unavailable",
+        )
 
 
 app.include_router(api_router, prefix=settings.api_v1_prefix)
