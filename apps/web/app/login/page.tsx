@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { apiFetch, login } from "@/lib/api";
+import { login } from "@/lib/api";
 import { setToken } from "@/lib/auth";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,52 +33,47 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-8 px-6 py-16">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Вход</h1>
-        <p className="text-slate-300">BuildLaw AI MVP</p>
-      </header>
+    <div className="bg-grid">
+      <main className="mx-auto flex max-w-md flex-col gap-8 px-6 py-16">
+        <header className="space-y-2">
+          <p className="text-sm font-medium tracking-wide text-emerald-300/90">BuildLaw AI</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Вход</h1>
+          <p className="text-slate-300">Продолжите работу с документами вашей организации.</p>
+        </header>
 
-      <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-800 bg-slate-900/60 p-6">
-        <label className="block space-y-2">
-          <span className="text-sm text-slate-300">Email</span>
-          <input
-            className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-slate-100"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            required
-          />
-        </label>
-        <label className="block space-y-2">
-          <span className="text-sm text-slate-300">Пароль</span>
-          <input
-            className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-slate-100"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            required
-          />
-        </label>
+        <Card className="p-6">
+          <form onSubmit={onSubmit} className="space-y-4">
+            <Input
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              required
+            />
+            <Input
+              label="Пароль"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              required
+            />
 
-        {error ? <p className="text-sm text-red-300">{error}</p> : null}
+            {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
-        <button
-          disabled={busy}
-          className="w-full rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 disabled:opacity-60"
-          type="submit"
-        >
-          {busy ? "Входим..." : "Войти"}
-        </button>
-      </form>
+            <Button className="w-full" type="submit" disabled={busy}>
+              {busy ? "Входим..." : "Войти"}
+            </Button>
+          </form>
+        </Card>
 
-      <p className="text-sm text-slate-300">
-        Нет аккаунта?{" "}
-        <Link className="text-emerald-400 underline" href="/register">
-          Регистрация
-        </Link>
-      </p>
-    </main>
+        <p className="text-sm text-slate-300">
+          Нет аккаунта?{" "}
+          <Link className="text-emerald-400 underline" href="/register">
+            Регистрация
+          </Link>
+        </p>
+      </main>
+    </div>
   );
 }
 

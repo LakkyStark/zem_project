@@ -5,6 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Select";
 
 type UploadSessionRequest = {
   type: string;
@@ -86,7 +89,7 @@ export default function UploadPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Загрузка документа</h1>
-          <p className="text-slate-300">Создаём upload session → PUT в S3/MinIO → complete-upload.</p>
+          <p className="text-slate-300">Upload session → PUT в storage → complete-upload → очередь OCR.</p>
         </div>
         <Link
           href={`/organizations/${orgId}/documents`}
@@ -97,7 +100,7 @@ export default function UploadPage() {
       </div>
 
       <div
-        className="rounded-xl border border-dashed border-slate-700 bg-slate-900/40 p-8"
+        className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/45 p-8"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -120,19 +123,12 @@ export default function UploadPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 rounded-xl border border-slate-800 bg-slate-900/60 p-6">
-        <label className="grid gap-2">
-          <span className="text-sm text-slate-300">Тип документа</span>
-          <select
-            value={docType}
-            onChange={(e) => setDocType(e.target.value as any)}
-            className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-slate-100"
-          >
-            <option value="egrn">egrn</option>
-            <option value="authority_refusal">authority_refusal</option>
-            <option value="other">other</option>
-          </select>
-        </label>
+      <Card className="grid gap-4 p-6">
+        <Select label="Тип документа" value={docType} onChange={(e) => setDocType(e.target.value as any)}>
+          <option value="egrn">egrn</option>
+          <option value="authority_refusal">authority_refusal</option>
+          <option value="other">other</option>
+        </Select>
 
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
@@ -153,15 +149,11 @@ export default function UploadPage() {
                 : "error"}
             </span>
           </div>
-          <button
-            onClick={startUpload}
-            disabled={!canSubmit}
-            className="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 disabled:opacity-60"
-          >
+          <Button onClick={startUpload} disabled={!canSubmit}>
             Загрузить
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </main>
   );
 }

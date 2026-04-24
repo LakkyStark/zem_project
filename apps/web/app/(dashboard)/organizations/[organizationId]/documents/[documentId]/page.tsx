@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 import { DocumentStatus, StatusBadge, statusMeta } from "@/lib/documentStatus";
+import { Card } from "@/components/ui/Card";
 
 type DocumentPage = { page_number: number; ocr_text: string; confidence: number };
 type DocumentDetails = {
@@ -72,10 +73,14 @@ export default function DocumentDetailsPage({
   if (error) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-red-300">{error}</p>
-        <Link className="text-emerald-400 underline" href={`/organizations/${orgId}/documents`}>
-          Назад
-        </Link>
+        <Card className="p-6">
+          <p className="text-sm text-red-300">{error}</p>
+          <div className="mt-4">
+            <Link className="text-emerald-400 underline" href={`/organizations/${orgId}/documents`}>
+              Назад
+            </Link>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -102,7 +107,7 @@ export default function DocumentDetailsPage({
       </div>
 
       {data.status === "failed" ? (
-        <div className="rounded-xl border border-red-800/40 bg-red-950/30 p-6 text-red-200">
+        <div className="rounded-2xl border border-red-800/40 bg-red-950/30 p-6 text-red-200">
           <div className="font-medium">Ошибка обработки</div>
           <div className="mt-2 text-sm opacity-90">{data.error_message ?? "Неизвестная ошибка"}</div>
         </div>
@@ -113,7 +118,7 @@ export default function DocumentDetailsPage({
           <h2 className="text-lg font-medium text-white">OCR preview</h2>
           <div className="grid gap-4">
             {data.pages.map((p) => (
-              <section key={p.page_number} className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+              <section key={p.page_number} className="rounded-2xl border border-slate-800 bg-slate-900/55 p-5">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-slate-300">Страница {p.page_number}</div>
                   <div className="text-xs text-slate-400">confidence: {p.confidence.toFixed(2)}</div>
@@ -124,10 +129,10 @@ export default function DocumentDetailsPage({
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-slate-300">
+        <Card className="p-6 text-slate-300">
           OCR ещё не готов. Эта страница обновляется автоматически каждые 3 секунды, пока документ в статусе
           <span className="text-slate-100"> uploaded</span> или <span className="text-slate-100">queued</span>.
-        </div>
+        </Card>
       )}
     </main>
   );

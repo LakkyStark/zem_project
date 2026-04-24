@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 import { DocumentStatus, StatusBadge } from "@/lib/documentStatus";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 type DocumentListItem = {
   id: string;
@@ -51,27 +53,22 @@ export default function DocumentsListPage() {
           <h1 className="text-2xl font-semibold">Документы</h1>
           <p className="text-slate-300">Загрузки и статус OCR/анализа.</p>
         </div>
-        <Link
-          href={`/organizations/${orgId}/documents/upload`}
-          className="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950"
-        >
-          Загрузить документ
-        </Link>
+        <Button href={`/organizations/${orgId}/documents/upload`}>Загрузить документ</Button>
       </div>
 
       {loading ? <p className="text-slate-300">Загрузка...</p> : null}
       {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
       {!loading && !error && (data?.items?.length ?? 0) === 0 ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-slate-300">
+        <Card className="p-8 text-slate-300">
           Пока нет документов. Нажмите «Загрузить документ».
-        </div>
+        </Card>
       ) : null}
 
       {data?.items?.length ? (
-        <div className="overflow-hidden rounded-xl border border-slate-800">
+        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/55">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-950/80 text-slate-300">
+            <thead className="bg-slate-950/70 text-slate-300">
               <tr>
                 <th className="px-4 py-3 font-medium">Файл</th>
                 <th className="px-4 py-3 font-medium">Тип</th>
@@ -80,7 +77,7 @@ export default function DocumentsListPage() {
                 <th className="px-4 py-3 font-medium">Создан</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 bg-slate-900/60">
+            <tbody className="divide-y divide-slate-800">
               {data.items.map((d) => (
                 <tr key={d.id} className="hover:bg-slate-900">
                   <td className="px-4 py-3">
