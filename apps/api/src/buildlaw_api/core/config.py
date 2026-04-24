@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,7 +14,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
-    s3_endpoint_url: str = "http://127.0.0.1:9000"
+    # For AWS S3 you can omit endpoint_url (None). For MinIO/R2 set explicit endpoint.
+    s3_endpoint_url: str | None = "http://127.0.0.1:9000"
     s3_public_endpoint_url: str | None = None
     s3_access_key_id: str = "minioadmin"
     s3_secret_access_key: str = "minioadmin"
@@ -21,6 +23,9 @@ class Settings(BaseSettings):
     s3_region: str = "us-east-1"
 
     api_v1_prefix: str = "/v1"
+    cors_allow_origins: list[str] = Field(
+        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
+    )
 
 
 @lru_cache

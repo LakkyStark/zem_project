@@ -96,3 +96,43 @@ pytest -q
 ## Расширение домена
 
 В `apps/api/src/buildlaw_api/domains/` зарезервированы каталоги `ocr`, `extraction`, `analysis`, `billing` — туда можно выносить сервисы и use-case без смешивания с HTTP-слоем.
+
+## Deployment (рекомендуемая схема)
+
+### Выбор платформ
+
+- **Web (`apps/web`)**: Vercel
+- **API + Worker + Postgres + Redis (`apps/api`, `apps/worker`)**: Railway (как 2 сервиса) + встроенные плагины Postgres/Redis
+- **Object storage**: Cloudflare R2 или AWS S3
+
+### Переменные окружения (prod)
+
+**Vercel (web)**:
+- `NEXT_PUBLIC_API_URL` = `https://<ваш-api-домен>` (Railway)
+
+**Railway (api)**:
+- `PORT` (Railway выставляет автоматически)
+- `DATABASE_URL` (Railway Postgres)
+- `REDIS_URL` (Railway Redis)
+- `JWT_SECRET` (обязательно)
+- `S3_BUCKET_NAME`
+- `S3_REGION`
+- `S3_ACCESS_KEY_ID`
+- `S3_SECRET_ACCESS_KEY`
+- `S3_ENDPOINT_URL` (для R2/MinIO; для AWS можно не задавать)
+- `S3_PUBLIC_ENDPOINT_URL` (опционально; если presigned должны идти через кастомный домен)
+- `CORS_ALLOW_ORIGINS` = `["https://<ваш-vercel-домен>"]`
+
+**Railway (worker)**:
+- `DATABASE_URL`
+- `REDIS_URL`
+- `S3_*` (как у api)
+
+### Минимальный порядок деплоя
+
+1. Создайте проект в Railway, добавьте плагины **Postgres** и **Redis**.
+2. Задеплойте `apps/api` (Dockerfile уже есть). Проверьте `GET /health` и `GET /docs`.
+3. Задеплойте `apps/worker` вторым сервисом (Dockerfile уже есть), подключите тот же `REDIS_URL` и `DATABASE_URL`.
+4. Создайте bucket в R2/S3 и укажите `S3_*` переменные.
+5. Задеплойте `apps/web` в Vercel, выставьте `NEXT_PUBLIC_API_URL` на домен API.
+

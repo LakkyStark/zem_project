@@ -13,7 +13,7 @@ def _s3_client() -> BaseClient:
     s = get_settings()
     return boto3.client(
         "s3",
-        endpoint_url=s.s3_endpoint_url,
+        endpoint_url=s.s3_endpoint_url or None,
         aws_access_key_id=s.s3_access_key_id,
         aws_secret_access_key=s.s3_secret_access_key,
         region_name=s.s3_region,
