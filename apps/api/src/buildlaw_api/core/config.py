@@ -27,6 +27,11 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
     )
 
+    # Supabase Storage (альтернатива S3/R2). Если задано SUPABASE_URL — используем Supabase.
+    supabase_url: str | None = None
+    supabase_service_role_key: str | None = None
+    supabase_storage_bucket: str = "documents"
+
 
 @lru_cache
 def get_settings() -> Settings:

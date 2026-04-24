@@ -42,10 +42,7 @@ def create_upload_session(
     db.commit()
     db.refresh(doc)
 
-    url = storage_service.presigned_put_url(
-        storage_key=key,
-        mime_type=body.mime_type,
-    )
+    url = storage_service.upload_url(storage_key=key, mime_type=body.mime_type)
     return doc, url
 
 

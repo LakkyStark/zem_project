@@ -136,28 +136,25 @@ pytest -q
 4. Создайте bucket в R2/S3 и укажите `S3_*` переменные.
 5. Задеплойте `apps/web` в Vercel, выставьте `NEXT_PUBLIC_API_URL` на домен API.
 
-## Free-tier deployment (Vercel + Render + Neon + Upstash + R2)
+## Free-tier deployment (Vercel + Render + Supabase + Upstash + Supabase Storage)
 
 Это минимальная схема для тестирования (до ~100 пользователей/день) без отдельного платного воркера:
 - **Vercel**: `apps/web`
 - **Render (1 service, Docker)**: запускает **API + RQ worker** в одном контейнере
-- **Neon**: Postgres
+- **Supabase**: Postgres
 - **Upstash**: Redis
-- **Cloudflare R2**: S3-compatible storage
+- **Supabase Storage**: storage (без необходимости подключать биллинг Cloudflare/AWS)
 
-### Cloudflare R2: какие S3_* значения нужны
+### Supabase Storage: какие переменные нужны
 
-В Cloudflare:
-1) Создайте **R2 bucket** (например `buildlaw-documents`)  
-2) Создайте **R2 API Token / Access Keys**  
-3) Возьмите **Account ID**
+В Supabase:
+1) Storage → Create bucket (например `documents`)  
+2) Project Settings → API → возьмите **Service role key** (держите в секрете)
 
 Переменные:
-- `S3_BUCKET_NAME` = имя bucket
-- `S3_REGION` = `auto`
-- `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` = ключи R2
-- `S3_ENDPOINT_URL` = `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
-- `S3_PUBLIC_ENDPOINT_URL` = (опционально) домен/endpoint, через который хотите выдавать presigned URL
+- `SUPABASE_URL` = `https://<project-ref>.supabase.co`
+- `SUPABASE_SERVICE_ROLE_KEY` = service role key
+- `SUPABASE_STORAGE_BUCKET` = имя bucket (например `documents`)
 
 ### Render (API+Worker в одном сервисе)
 
@@ -165,11 +162,11 @@ pytest -q
 2) **Environment**: Docker  
 3) Root directory: **репозиторий целиком** (корень), т.к. используется `./Dockerfile`  
 4) Добавьте env:
-   - `DATABASE_URL` (из Neon; формат SQLAlchemy: `postgresql+psycopg2://...`)
+   - `DATABASE_URL` (из Supabase; формат SQLAlchemy: `postgresql+psycopg2://...`)
    - `REDIS_URL` (из Upstash; обычно `rediss://...`)
    - `JWT_SECRET`
    - `CORS_ALLOW_ORIGINS` = `["https://<ваш-vercel-домен>"]`
-   - `S3_*` (как выше)
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET`
 
 Сервис сам выполнит `alembic upgrade head`, затем запустит API и RQ worker.
 
