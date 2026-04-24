@@ -9,3 +9,14 @@
 body {
   @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
 }
+
+.bg-grid {
+  background-image:
+    radial-gradient(60% 60% at 50% 0%, rgba(16, 185, 129, 0.14) 0%, rgba(2, 6, 23, 0) 60%),
+    radial-gradient(40% 40% at 0% 20%, rgba(56, 189, 248, 0.10) 0%, rgba(2, 6, 23, 0) 55%),
+    radial-gradient(40% 40% at 100% 30%, rgba(168, 85, 247, 0.08) 0%, rgba(2, 6, 23, 0) 55%),
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: auto, auto, auto, 48px 48px, 48px 48px;
+  background-position: center, center, center, center, center;
+}
