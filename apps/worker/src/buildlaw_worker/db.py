@@ -9,4 +9,7 @@ def _normalize_dsn(url: str) -> str:
 
 def get_connection() -> PgConnection:
     raw = get_settings().database_url
-    return psycopg2.connect(_normalize_dsn(raw))
+    dsn = _normalize_dsn(raw)
+    if "supabase.co" in dsn and "sslmode=" not in dsn:
+        return psycopg2.connect(dsn, sslmode="require")
+    return psycopg2.connect(dsn)

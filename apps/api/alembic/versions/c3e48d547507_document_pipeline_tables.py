@@ -27,6 +27,7 @@ def upgrade() -> None:
 
     # 2) Update document_status enum (MVP-friendly migration)
     # Rename old enum, create new one, cast column, drop old.
+    op.execute("ALTER TABLE documents ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TYPE document_status RENAME TO document_status_old")
     op.execute(
         "CREATE TYPE document_status AS ENUM ("
@@ -37,6 +38,7 @@ def upgrade() -> None:
         "ALTER TABLE documents ALTER COLUMN status TYPE document_status "
         "USING status::text::document_status"
     )
+    op.execute("ALTER TABLE documents ALTER COLUMN status SET DEFAULT 'pending_upload'::document_status")
     op.execute("DROP TYPE document_status_old")
 
     # 3) Create document_pages
@@ -71,6 +73,7 @@ def downgrade() -> None:
     op.drop_index("ix_document_pages_organization_id", table_name="document_pages")
     op.drop_table("document_pages")
 
+    op.execute("ALTER TABLE documents ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TYPE document_status RENAME TO document_status_new")
     op.execute(
         "CREATE TYPE document_status AS ENUM ("
@@ -81,6 +84,7 @@ def downgrade() -> None:
         "ALTER TABLE documents ALTER COLUMN status TYPE document_status "
         "USING status::text::document_status"
     )
+    op.execute("ALTER TABLE documents ALTER COLUMN status SET DEFAULT 'pending_upload'::document_status")
     op.execute("DROP TYPE document_status_new")
 
     op.drop_column("documents", "error_message")
