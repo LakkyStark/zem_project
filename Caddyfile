@@ -1,0 +1,12 @@
+{
+  email admin@example.ru
+}
+
+{$PUBLIC_WEB_DOMAIN} {
+  reverse_proxy web:3000
+}
+
+{$PUBLIC_API_DOMAIN} {
+  reverse_proxy api:8000
+}
+

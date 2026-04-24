@@ -97,6 +97,52 @@ pytest -q
 
 В `apps/api/src/buildlaw_api/domains/` зарезервированы каталоги `ocr`, `extraction`, `analysis`, `billing` — туда можно выносить сервисы и use-case без смешивания с HTTP-слоем.
 
+## Полное размещение в РФ (VPS + Docker Compose)
+
+Целевая схема для продакшена без vendor lock-in: **один VPS**, на нём `docker compose` поднимает:
+- `web` (Next.js, production build)
+- `api` (FastAPI)
+- `worker` (RQ)
+- `postgres`
+- `redis`
+- `minio` (S3-compatible storage)
+- `caddy` (HTTPS + reverse proxy)
+
+### Подготовка VPS (один раз)
+
+- Установите Docker и Docker Compose plugin
+- Откройте порты **80/443** (и 22 для SSH)
+- Настройте DNS:
+  - `app.<ваш-домен>.ru` → IP VPS
+  - `api.<ваш-домен>.ru` → IP VPS
+
+### Запуск
+
+1) На VPS в папке проекта:
+
+```bash
+cp .env.vps.example .env.vps
+```
+
+Заполните в `.env.vps`:
+- `PUBLIC_WEB_DOMAIN`
+- `PUBLIC_API_DOMAIN`
+- `JWT_SECRET` (например `openssl rand -hex 32`)
+- `POSTGRES_PASSWORD`
+- `MINIO_ROOT_PASSWORD`
+
+2) Старт:
+
+```bash
+docker compose --env-file .env.vps -f docker-compose.prod.yml up -d --build
+```
+
+### Проверка
+
+- Web: `https://$PUBLIC_WEB_DOMAIN`
+- API health: `https://$PUBLIC_API_DOMAIN/health`
+- API docs: `https://$PUBLIC_API_DOMAIN/docs`
+
 ## Deployment (рекомендуемая схема)
 
 ### Выбор платформ
